@@ -1,41 +1,72 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TN Election 2026</title><script src="https://cdn.jsdelivr.net/npm/chart.js"></script><style>
-body { margin:0; font-family:Arial; background:#111; color:white; }
+<title>TN Election 2026 Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body { margin:0; font-family:Poppins; background:#0b0b0b; color:white; }
 
 /* HEADER */
 .header {
-    padding:15px;
+    padding:15px 30px;
     background:black;
     color:#e50914;
-    font-weight:bold;
+    font-weight:600;
 }
 
 /* SECTION */
-.section { padding:20px; }
+.section { padding:30px; }
 
 /* LIVE */
 .live span { font-weight:bold; }
+
+/* GRID */
+.grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.card {
+    background:#1c1c1c;
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+}
+
+.card img {
+    width:100%;
+    height:180px;
+    object-fit:cover;
+    border-radius:10px;
+}
+
+/* PARTY LOGO */
+.party img {
+    width:80px;
+    height:80px;
+    object-fit:contain;
+    background:white;
+    padding:5px;
+    border-radius:8px;
+}
 
 /* CAROUSEL */
 .carousel { overflow:hidden; }
 .track {
     display:flex;
-    transition: transform 0.5s ease;
-}
-.card {
-    min-width:200px;
-    margin:10px;
-    background:#222;
-    padding:10px;
-    border-radius:8px;
-    text-align:center;
+    gap:20px;
+    transition:transform 0.6s ease;
 }
 
 /* MAP */
-svg { width:100%; max-width:400px; }
+svg { width:100%; max-width:500px; }
 path { fill:#333; cursor:pointer; }
 path:hover { fill:#e50914; }
 
@@ -50,63 +81,116 @@ path:hover { fill:#e50914; }
     align-items:center;
 }
 .modal-content {
-    background:#222;
+    background:#1c1c1c;
     padding:20px;
     border-radius:10px;
 }
+</style>
+</head>
 
-/* CHART */
-canvas { margin-top:20px; }
-</style></head><body><div class="header">TN Election Dashboard</div><!-- 🔴 LIVE --><div class="section live">
+<body>
+
+<div class="header">📊 TN Election Dashboard</div>
+
+<!-- LIVE -->
+<div class="section live">
 DMK: <span id="dmk">160</span> |
 AIADMK: <span id="aiadmk">60</span> |
 Others: <span id="others">15</span>
-</div><!-- 🎬 CAROUSEL --><div class="section">
-<h3>Leaders</h3>
-<div class="carousel">
-    <div class="track" id="track">
-        <div class="card">Stalin</div>
-        <div class="card">EPS</div>
-        <div class="card">Vijay</div>
-    </div>
 </div>
-</div><!-- 📊 CHART --><div class="section">
+
+<!-- PARTIES -->
+<div class="section grid">
+<div class="card party">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/DMK_Flag.svg">
+<h3>DMK Alliance</h3>
+</div>
+
+<div class="card party">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/AIADMK_Flag.svg">
+<h3>AIADMK Alliance</h3>
+</div>
+
+<div class="card party">
+<img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Tamilaga_Vettri_Kazhagam_flag.svg">
+<h3>TVK / Others</h3>
+</div>
+</div>
+
+<!-- LEADERS CAROUSEL -->
+<div class="section">
+<h2>Leaders</h2>
+
+<div class="carousel">
+<div class="track" id="track">
+
+<div class="card">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/MK_Stalin_2021.jpg">
+<h3>MK Stalin</h3>
+</div>
+
+<div class="card">
+<img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Edappadi_K_Palaniswami.jpg">
+<h3>EPS</h3>
+</div>
+
+<div class="card">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Actor_Vijay.jpg">
+<h3>Vijay</h3>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- CHART -->
+<div class="section">
 <canvas id="chart"></canvas>
-</div><!-- 🗺️ MAP --><div class="section">
-<svg viewBox="0 0 200 200"><path d="M20 20 L80 20 L80 80 L20 80 Z"
-onclick="show('Chennai','DMK Stronghold')"/>
+</div>
+
+<!-- MAP -->
+<div class="section">
+<svg viewBox="0 0 200 200">
+
+<path d="M20 20 L80 20 L80 80 L20 80 Z"
+onclick="openModal('Chennai','DMK Stronghold')"/>
 
 <path d="M100 20 L160 20 L160 80 L100 80 Z"
-onclick="show('Coimbatore','Swing Region')"/>
+onclick="openModal('Coimbatore','Swing Region')"/>
 
 <path d="M20 100 L80 100 L80 160 L20 160 Z"
-onclick="show('Madurai','Close Fight')"/>
+onclick="openModal('Madurai','Close Fight')"/>
 
 </svg>
-</div><!-- MODAL --><div class="modal" id="modal">
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
 <div class="modal-content">
 <h3 id="title"></h3>
 <p id="desc"></p>
 <button onclick="closeModal()">Close</button>
 </div>
-</div><script>
+</div>
 
-/* 🔴 LIVE FIX */
+<script>
+
+/* LIVE UPDATE */
 setInterval(()=>{
-    document.getElementById("dmk").innerText = 140 + Math.floor(Math.random()*20);
-    document.getElementById("aiadmk").innerText = 50 + Math.floor(Math.random()*20);
-    document.getElementById("others").innerText = 10 + Math.floor(Math.random()*10);
+document.getElementById("dmk").innerText = 140 + Math.floor(Math.random()*20);
+document.getElementById("aiadmk").innerText = 50 + Math.floor(Math.random()*20);
+document.getElementById("others").innerText = 10 + Math.floor(Math.random()*10);
 },2000);
 
-/* 🎬 CAROUSEL FIX */
-let index=0;
+/* CAROUSEL */
+let i=0;
 setInterval(()=>{
-    index=(index+1)%3;
-    document.getElementById("track").style.transform =
-        "translateX(-"+(index*220)+"px)";
-},2000);
+i=(i+1)%3;
+document.getElementById("track").style.transform =
+"translateX(-"+(i*260)+"px)";
+},2500);
 
-/* 📊 CHART FIX */
+/* CHART */
 new Chart(document.getElementById("chart"),{
 type:'bar',
 data:{
@@ -118,15 +202,17 @@ backgroundColor:['red','green','yellow']
 }
 });
 
-/* 🗳️ MODAL FIX */
-function show(t,d){
-    document.getElementById("modal").style.display="flex";
-    document.getElementById("title").innerText=t;
-    document.getElementById("desc").innerText=d;
+/* MODAL */
+function openModal(t,d){
+document.getElementById("modal").style.display="flex";
+document.getElementById("title").innerText=t;
+document.getElementById("desc").innerText=d;
 }
 function closeModal(){
-    document.getElementById("modal").style.display="none";
+document.getElementById("modal").style.display="none";
 }
 
-</script></body>
+</script>
+
+</body>
 </html>

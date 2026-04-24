@@ -9,21 +9,23 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0a0a0f;
-    --surface: #13131a;
-    --card: #1a1a26;
-    --border: rgba(255,255,255,0.07);
+    --bg: linear-gradient(135deg, #0a0a0f 0%, #1a0a1a 50%, #0a0a0f 100%);
+    --surface: rgba(26,26,38,0.95);
+    --card: rgba(42,42,58,0.9);
+    --border: rgba(255,255,255,0.08);
     --dmk: #e53935;
     --aiadmk: #43a047;
     --tvk: #fb8c00;
     --ntk: #7c4dff;
     --others: #0288d1;
     --gold: #f5c842;
-    --text: #e8e8f0;
-    --muted: #8888a0;
+    --text: #ffffff;
+    --muted: #b0b0c0;
     --accent: #e53935;
-    --radius: 14px;
-    --glass: rgba(255,255,255,0.04);
+    --radius: 16px;
+    --glass: rgba(255,255,255,0.05);
+    --shadow: 0 8px 32px rgba(0,0,0,0.3);
+    --glow: 0 0 20px rgba(229,57,53,0.2);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
@@ -33,17 +35,19 @@
     font-family: 'Outfit', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    background-attachment: fixed;
   }
 
   /* ── NAV ── */
   nav {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(10,10,15,0.85);
-    backdrop-filter: blur(18px);
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
     padding: 0 clamp(16px,4vw,60px);
     display: flex; align-items: center; justify-content: space-between;
-    height: 64px;
+    height: 70px;
+    box-shadow: var(--shadow);
   }
   .nav-brand {
     display: flex; align-items: center; gap: 10px;
@@ -71,15 +75,18 @@
   /* ── HERO ── */
   .hero {
     position: relative; overflow: hidden;
-    padding: clamp(40px,8vw,100px) clamp(16px,4vw,60px) clamp(30px,6vw,70px);
-    background: linear-gradient(135deg,#0a0a0f 40%,#1a0a1a 100%);
+    padding: clamp(60px,10vw,120px) clamp(16px,4vw,60px) clamp(40px,8vw,80px);
+    background: linear-gradient(135deg, rgba(10,10,15,0.9) 0%, rgba(26,10,26,0.9) 50%, rgba(10,10,15,0.9) 100%);
+    border-bottom: 1px solid var(--border);
   }
   .hero::before {
     content:''; position:absolute; inset:0;
-    background: radial-gradient(ellipse at 70% 50%, rgba(229,57,53,.12) 0%, transparent 60%),
-                radial-gradient(ellipse at 20% 80%, rgba(67,160,71,.08) 0%, transparent 50%);
+    background: radial-gradient(ellipse at 70% 50%, rgba(229,57,53,.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(67,160,71,.12) 0%, transparent 50%);
     pointer-events:none;
+    animation: float 20s ease-in-out infinite;
   }
+  @keyframes float { 0%,100%{transform:scale(1)}50%{transform:scale(1.05)} }
   .hero-grid { display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center; }
   .hero-eyebrow {
     font-size:.75rem; letter-spacing:3px; text-transform:uppercase;
@@ -139,18 +146,29 @@
     display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px;
   }
   .alliance-card {
-    background:var(--card); border:1px solid var(--border);
-    border-radius:var(--radius); padding:24px;
-    transition:transform .25s, box-shadow .25s;
-    position:relative; overflow:hidden;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
   }
-  .alliance-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.4); }
+  .alliance-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border-color: rgba(255,255,255,0.15);
+  }
   .alliance-card::before {
-    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background: linear-gradient(90deg, transparent 0%, var(--dmk) 50%, transparent 100%);
+    transition: all 0.3s;
   }
-  .alliance-card.dmk::before { background:var(--dmk); }
-  .alliance-card.aiadmk::before { background:var(--aiadmk); }
-  .alliance-card.others::before { background:var(--tvk); }
+  .alliance-card.dmk::before { background: linear-gradient(90deg, transparent 0%, var(--dmk) 50%, transparent 100%); }
+  .alliance-card.aiadmk::before { background: linear-gradient(90deg, transparent 0%, var(--aiadmk) 50%, transparent 100%); }
+  .alliance-card.others::before { background: linear-gradient(90deg, transparent 0%, var(--tvk) 50%, transparent 100%); }
+  .alliance-card:hover::before { height:6px; }
 
   .alliance-name {
     font-size:.7rem; letter-spacing:2px; text-transform:uppercase;
@@ -184,7 +202,27 @@
   .aiadmk-bar { background:var(--aiadmk); }
   .others-bar { background:var(--tvk); }
 
-  /* ── CAROUSEL ── */
+  /* ── METRICS ── */
+  .metrics-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
+  }
+  .metric-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; text-align: center;
+    transition: all 0.3s ease; backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+  }
+  .metric-card:hover {
+    transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    border-color: rgba(245,196,66,0.3);
+  }
+  .metric-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .metric-value {
+    font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .metric-label { font-size: 0.9rem; color: var(--muted); margin-bottom: 8px; }
+  .metric-trend { font-size: 0.8rem; color: var(--text); font-weight: 500; }
   .carousel-wrap { position:relative; overflow:hidden; }
   .carousel-track {
     display:flex; gap:20px;
@@ -245,8 +283,12 @@
   .poll-bar-inner { height:100%; border-radius:2px; transition:width .8s ease; }
   .poll-update { font-size:.68rem; color:var(--muted); margin-top:8px; }
 
-  /* ── SVG MAP ── */
-  #tn-map { width:100%; max-width:600px; display:block; margin:0 auto; cursor:pointer; }
+  #tn-map {
+    width: 100%; max-width: 700px; display: block; margin: 0 auto;
+    cursor: pointer; filter: drop-shadow(var(--shadow));
+    transition: filter 0.3s;
+  }
+  #tn-map:hover { filter: drop-shadow(0 0 30px rgba(245,196,66,0.3)); }
   .map-region { transition:fill .2s, opacity .2s; }
   .map-region:hover { opacity:.75; }
   .map-legend { display:flex; gap:20px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
@@ -287,7 +329,29 @@
   .modal-stat-val { font-weight:700; font-size:1.1rem; }
   .modal-stat-lbl { font-size:.68rem; color:var(--muted); }
 
-  /* ── KEY INSIGHTS ── */
+  /* ── KEY ISSUES ── */
+  .issues-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+  .issue-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; text-align: center;
+    transition: all 0.3s ease; backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+  }
+  .issue-card:hover {
+    transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    border-color: rgba(124,77,255,0.3);
+  }
+  .issue-icon { font-size: 2rem; margin-bottom: 12px; }
+  .issue-title { font-weight: 600; font-size: 1rem; margin-bottom: 8px; color: var(--text); }
+  .issue-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+  .issue-priority {
+    font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+    display: inline-block;
+  }
+  .issue-priority.critical { background: rgba(229,57,53,0.2); color: #e53935; }
+  .issue-priority.high { background: rgba(255,152,0,0.2); color: #ff9800; }
+  .issue-priority.medium { background: rgba(76,175,80,0.2); color: #4caf50; }
+  .issue-priority.low { background: rgba(96,125,139,0.2); color: #607d8b; }
   .insights-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
   .insight-card {
     background:var(--card); border:1px solid var(--border);
@@ -313,10 +377,39 @@
   ::-webkit-scrollbar-track { background:var(--bg); }
   ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:3px; }
 
-  .party-logo { width:40px; height:40px; margin-bottom:8px; object-fit:contain; }
+  .search-container { text-align: center; margin-bottom: 20px; }
+  .search-input {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 25px; padding: 10px 20px; width: 300px; max-width: 90%;
+    color: var(--text); font-family: 'Outfit', sans-serif;
+    transition: all 0.3s ease; backdrop-filter: blur(10px);
+  }
+  .search-input:focus {
+    outline: none; border-color: var(--gold); box-shadow: 0 0 20px rgba(245,196,66,0.3);
+    transform: scale(1.02);
+  }
+
+  /* Loading */
+  .loading {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.5s ease;
+  }
+  .loading.hidden { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 50px; height: 50px; border: 4px solid var(--border);
+    border-top: 4px solid var(--gold); border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+</div>
 
 <!-- NAV -->
 <nav>
@@ -451,12 +544,64 @@
 
 <div class="divider"></div>
 
+<!-- ELECTION METRICS -->
+<section id="metrics">
+  <div class="section-header">
+    <h2 class="section-title">Election Metrics</h2>
+    <span class="section-badge" style="color:var(--gold);border-color:var(--gold)">Key Stats</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-icon">🗳️</div>
+      <div class="metric-value">72.5%</div>
+      <div class="metric-label">Expected Voter Turnout</div>
+      <div class="metric-trend">▲ +2.1% from 2021</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">👥</div>
+      <div class="metric-value">6.2Cr</div>
+      <div class="metric-label">Total Voters</div>
+      <div class="metric-trend">📈 +8.5% growth</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">🏛️</div>
+      <div class="metric-value">234</div>
+      <div class="metric-label">Assembly Seats</div>
+      <div class="metric-trend">🔒 Unchanged</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">📊</div>
+      <div class="metric-value">38</div>
+      <div class="metric-label">Districts</div>
+      <div class="metric-trend">🗺️ All active</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">💰</div>
+      <div class="metric-value">₹2,500Cr</div>
+      <div class="metric-label">Election Budget</div>
+      <div class="metric-trend">💸 Record high</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-icon">📰</div>
+      <div class="metric-value">15</div>
+      <div class="metric-label">Key Issues</div>
+      <div class="metric-trend">🔥 Hot topics</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
 <!-- LEADERS CAROUSEL -->
 <section id="leaders">
   <div class="section-header">
     <h2 class="section-title">Key Leaders</h2>
     <div class="section-line"></div>
     <span class="section-badge" style="color:var(--muted);border-color:var(--border)">Hover to Pause</span>
+  </div>
+  <div class="search-container">
+    <input type="text" id="leader-search" placeholder="Search leaders..." class="search-input">
   </div>
   <div class="carousel-wrap">
     <div class="carousel-track" id="carousel-track"></div>
@@ -601,6 +746,55 @@
   </div>
 </section>
 
+<div class="divider"></div>
+
+<!-- KEY ISSUES -->
+<section id="issues">
+  <div class="section-header">
+    <h2 class="section-title">Key Election Issues</h2>
+    <span class="section-badge" style="color:#7c4dff;border-color:#7c4dff">Hot Topics</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="issues-grid">
+    <div class="issue-card">
+      <div class="issue-icon">💧</div>
+      <div class="issue-title">Water Crisis</div>
+      <div class="issue-desc">Northeast monsoon failure and Cauvery dispute impact rural voters.</div>
+      <div class="issue-priority high">High Priority</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-icon">💼</div>
+      <div class="issue-title">Unemployment</div>
+      <div class="issue-desc">Youth joblessness at 12.5% drives urban discontent.</div>
+      <div class="issue-priority critical">Critical</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-icon">🏥</div>
+      <div class="issue-title">Healthcare</div>
+      <div class="issue-desc">COVID aftermath and medical infrastructure gaps.</div>
+      <div class="issue-priority medium">Medium</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-icon">🚜</div>
+      <div class="issue-title">Farmer Welfare</div>
+      <div class="issue-desc">MSP guarantees and debt relief schemes.</div>
+      <div class="issue-priority high">High</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-icon">🏗️</div>
+      <div class="issue-title">Infrastructure</div>
+      <div class="issue-desc">Metro expansion and smart city projects.</div>
+      <div class="issue-priority medium">Medium</div>
+    </div>
+    <div class="issue-card">
+      <div class="issue-icon">👮</div>
+      <div class="issue-title">Law & Order</div>
+      <div class="issue-desc">Crime rates and police reforms.</div>
+      <div class="issue-priority low">Low</div>
+    </div>
+  </div>
+</section>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal-box">
@@ -633,6 +827,13 @@
   setInterval(update, 60000);
 })();
 
+// Hide loading after page load
+window.addEventListener('load', function(){
+  setTimeout(function(){
+    document.getElementById('loading').classList.add('hidden');
+  }, 1000);
+});
+
 // ── LEADERS DATA ──
 var leaders = [
   { name:'M.K. Stalin', role:'Chief Minister, TN', party:'DMK', img:'images/stalin.jpg', winChance:'92%', color:'var(--dmk)' },
@@ -652,6 +853,8 @@ var leaders = [
   items.forEach(function(l){
     var card = document.createElement('div');
     card.className = 'leader-card';
+    card.setAttribute('data-name', l.name.toLowerCase());
+    card.setAttribute('data-party', l.party.toLowerCase());
     card.innerHTML =
       '<img src="' + l.img + '" class="leader-img" alt="' + l.name + '">' +
       '<div class="leader-info">' +
@@ -661,6 +864,22 @@ var leaders = [
         '<span class="leader-party-badge" style="background:' + l.color + '22;color:' + l.color + ';border:1px solid ' + l.color + '44">' + l.party + '</span>' +
       '</div>';
     track.appendChild(card);
+  });
+
+  // Search functionality
+  var searchInput = document.getElementById('leader-search');
+  searchInput.addEventListener('input', function(){
+    var query = this.value.toLowerCase();
+    var cards = document.querySelectorAll('.leader-card');
+    cards.forEach(function(card){
+      var name = card.getAttribute('data-name');
+      var party = card.getAttribute('data-party');
+      if (name.includes(query) || party.includes(query) || query === '') {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
   });
 })();
 

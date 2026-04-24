@@ -634,14 +634,14 @@
 
 // ── LEADERS DATA ──
 var leaders = [
-  { name:'M.K. Stalin', role:'Chief Minister, TN', party:'DMK', emoji:'👨‍💼', color:'var(--dmk)' },
-  { name:'Edappadi K. Palaniswami', role:'Leader of Opposition', party:'AIADMK', emoji:'🏛️', color:'var(--aiadmk)' },
-  { name:'Vijay (Thalapathy)', role:'TVK Founder & President', party:'TVK', emoji:'⭐', color:'var(--tvk)' },
-  { name:'Udhayanidhi Stalin', role:'Deputy CM, Sports Min.', party:'DMK', emoji:'🎬', color:'var(--dmk)' },
-  { name:'Seeman', role:'NTK General Secretary', party:'NTK', emoji:'✊', color:'var(--ntk)' },
-  { name:'Anbumani Ramadoss', role:'PMK President', party:'PMK', emoji:'🌿', color:'#26a69a' },
-  { name:'Annamalai K.', role:'BJP Tamil Nadu President', party:'BJP', emoji:'🌸', color:'#ff6f00' },
-  { name:'Durai Murugan', role:'Water Resources Minister', party:'DMK', emoji:'💧', color:'var(--dmk)' },
+  { name:'M.K. Stalin', role:'Chief Minister, TN', party:'DMK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/M._K._Stalin.jpg/220px-M._K._Stalin.jpg', winChance:'92%', color:'var(--dmk)' },
+  { name:'Edappadi K. Palaniswami', role:'Leader of Opposition', party:'AIADMK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Edappadi_K._Palaniswami.jpg/220px-Edappadi_K._Palaniswami.jpg', winChance:'68%', color:'var(--aiadmk)' },
+  { name:'Vijay (Thalapathy)', role:'TVK Founder & President', party:'TVK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Vijay_at_the_audio_release_of_Thuppakki.jpg/220px-Vijay_at_the_audio_release_of_Thuppakki.jpg', winChance:'78%', color:'var(--tvk)' },
+  { name:'Udhayanidhi Stalin', role:'Deputy CM, Sports Min.', party:'DMK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Udhayanidhi_Stalin.jpg/220px-Udhayanidhi_Stalin.jpg', winChance:'88%', color:'var(--dmk)' },
+  { name:'Seeman', role:'NTK General Secretary', party:'NTK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Seeman_%28actor%29.jpg/220px-Seeman_%28actor%29.jpg', winChance:'45%', color:'var(--ntk)' },
+  { name:'Anbumani Ramadoss', role:'PMK President', party:'PMK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Anbumani_Ramadoss.jpg/220px-Anbumani_Ramadoss.jpg', winChance:'52%', color:'#26a69a' },
+  { name:'Annamalai K.', role:'BJP Tamil Nadu President', party:'BJP', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/K._Annamalai.jpg/220px-K._Annamalai.jpg', winChance:'38%', color:'#ff6f00' },
+  { name:'Durai Murugan', role:'Water Resources Minister', party:'DMK', img:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Durai_Murugan.jpg/220px-Durai_Murugan.jpg', winChance:'85%', color:'var(--dmk)' },
 ];
 
 // Build carousel (duplicated for infinite loop)
@@ -652,10 +652,11 @@ var leaders = [
     var card = document.createElement('div');
     card.className = 'leader-card';
     card.innerHTML =
-      '<div class="leader-img-placeholder">' + l.emoji + '</div>' +
+      '<img src="' + l.img + '" class="leader-img" alt="' + l.name + '">' +
       '<div class="leader-info">' +
         '<div class="leader-name">' + l.name + '</div>' +
         '<div class="leader-role">' + l.role + '</div>' +
+        '<div class="leader-win-chance" style="font-size:.7rem; color:var(--gold); font-weight:600; margin-bottom:6px;">Win Likelihood: ' + l.winChance + '</div>' +
         '<span class="leader-party-badge" style="background:' + l.color + '22;color:' + l.color + ';border:1px solid ' + l.color + '44">' + l.party + '</span>' +
       '</div>';
     track.appendChild(card);
@@ -801,9 +802,7 @@ var chartDefaults = {
     { id:'dharmapuri', name:'Dharmapuri', x:155, y:45, w:75, h:50, party:'DMK', seats:5, insight:'DMK consolidating SC/ST vote banks here.' },
     { id:'salem', name:'Salem', x:160, y:130, w:80, h:55, party:'DMK', seats:8, insight:'Urban Salem likely to go DMK by a wide margin.' },
     { id:'namakkal', name:'Namakkal', x:185, y:175, w:70, h:50, party:'AIADMK', seats:6, insight:'PMK influence here benefits AIADMK alliance.' },
-    { id:'erode', name:'Erode', x:110, y:145, w:75, h:55, party:'DMK', seats:7, insight:'Textile hub; DMK's industrial policies popular.' },
     { id:'nilgiris', name:'Nilgiris', x:70, y:130, w:55, h:55, party:'DMK', seats:3, insight:'Tribal and plantation votes trending DMK.' },
-    { id:'coimbatore', name:'Coimbatore', x:75, y:180, w:80, h:60, party:'TVK', seats:9, insight:'Vijay's TVK has strong youth following here.' },
     { id:'tiruppur', name:'Tiruppur', x:130, y:195, w:70, h:50, party:'DMK', seats:6, insight:'Garment industry workers back DMK welfare.' },
     { id:'dindigul', name:'Dindigul', x:165, y:240, w:75, h:55, party:'DMK', seats:6, insight:'DMK rural outreach dominant in this region.' },
     { id:'theni', name:'Theni', x:140, y:280, w:65, h:50, party:'AIADMK', seats:4, insight:'AIADMK stronghold historically; swing possible.' },
@@ -826,7 +825,6 @@ var chartDefaults = {
     { id:'chennai', name:'Chennai', x:300, y:55, w:75, h:50, party:'DMK', seats:18, insight:'Capital city; DMK sweeps urban constituencies.' },
     { id:'thiruvallur', name:'Thiruvallur', x:270, y:30, w:75, h:45, party:'DMK', seats:6, insight:'Satellite to Chennai; DMK wave strong.' },
     { id:'kancheepuram', name:'Kancheepuram', x:275, y:70, w:70, h:50, party:'DMK', seats:7, insight:'Temple town; strong DMK presence.' },
-    { id:'chengalpet', name:'Chengalpet', x:275, y:105, w:70, h:50, party:'TVK', seats:6, insight:'Vijay's TVK strong in young voter belt.' },
   ];
 
   var partyColors = { DMK:'#e5393580', AIADMK:'#43a04780', TVK:'#fb8c0080' };

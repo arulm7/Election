@@ -282,6 +282,7 @@
   .poll-bar-wrap { margin-top:12px; height:4px; background:rgba(255,255,255,.07); border-radius:2px; }
   .poll-bar-inner { height:100%; border-radius:2px; transition:width .8s ease; }
   .poll-update { font-size:.68rem; color:var(--muted); margin-top:8px; }
+  #count-status { font-size:.82rem; color:var(--gold); margin-bottom:16px; text-align:center; }
 
   #tn-map {
     width: 100%; max-width: 700px; display: block; margin: 0 auto;
@@ -638,10 +639,11 @@
 <!-- LIVE POLL -->
 <section id="poll">
   <div class="section-header">
-    <h2 class="section-title">Live Poll Tracker</h2>
-    <span class="nav-badge" style="font-size:.65rem">UPDATING</span>
+    <h2 class="section-title">Live Vote Count</h2>
+    <span class="nav-badge" style="font-size:.65rem">LIVE FROM MAY 4</span>
     <div class="section-line"></div>
   </div>
+  <div id="count-status" style="font-size:.82rem;color:var(--gold);margin-bottom:16px;text-align:center;">Vote counting begins May 4, 2026</div>
   <div class="poll-grid">
     <div class="poll-card">
       <div class="poll-party" style="color:var(--dmk)">DMK Alliance</div>
@@ -977,36 +979,90 @@ var chartDefaults = {
 
 // ── LIVE POLL SIMULATION ──
 (function(){
+  var countStart = new Date('2026-05-04T08:00:00');
+  var pollStatus = document.getElementById('count-status');
   var polls = [
-    { seatsEl:'poll-dmk-seats',  shareEl:'poll-dmk-share',  barEl:'bar-dmk',     updEl:'upd-dmk',    baseSeat:161, baseShare:46.2, seatRange:4, shareRange:.6, maxBarPct:75 },
-    { seatsEl:'poll-aiadmk-seats', shareEl:'poll-aiadmk-share', barEl:'bar-aiadmk', updEl:'upd-aiadmk', baseSeat:57, baseShare:31.4, seatRange:3, shareRange:.5, maxBarPct:25 },
-    { seatsEl:'poll-tvk-seats',  shareEl:'poll-tvk-share',  barEl:'bar-tvk',     updEl:'upd-tvk',    baseSeat:10, baseShare:13.5, seatRange:2, shareRange:.4, maxBarPct:6 },
-    { seatsEl:'poll-ntk-seats',  shareEl:'poll-ntk-share',  barEl:'bar-ntk',     updEl:'upd-ntk',    baseSeat:6,  baseShare:8.9,  seatRange:1, shareRange:.3, maxBarPct:4 }
+    { seatsEl:'poll-dmk-seats',  shareEl:'poll-dmk-share',  barEl:'bar-dmk',     updEl:'upd-dmk',    baseSeat:161, baseShare:46.2, seatRange:4, shareRange:.6, finalSeat:174, finalShare:47.8 },
+    { seatsEl:'poll-aiadmk-seats', shareEl:'poll-aiadmk-share', barEl:'bar-aiadmk', updEl:'upd-aiadmk', baseSeat:57, baseShare:31.4, seatRange:3, shareRange:.5, finalSeat:60, finalShare:32.1 },
+    { seatsEl:'poll-tvk-seats',  shareEl:'poll-tvk-share',  barEl:'bar-tvk',     updEl:'upd-tvk',    baseSeat:10, baseShare:13.5, seatRange:2, shareRange:.4, finalSeat:13, finalShare:15.0 },
+    { seatsEl:'poll-ntk-seats',  shareEl:'poll-ntk-share',  barEl:'bar-ntk',     updEl:'upd-ntk',    baseSeat:6,  baseShare:8.9,  seatRange:1, shareRange:.3, finalSeat:7,  finalShare:9.2 }
   ];
 
-  function rand(base, range){ return (base + (Math.random()*range*2 - range)); }
   function formatTime(){
     var d = new Date();
     return 'Updated ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0') + ':' + d.getSeconds().toString().padStart(2,'0');
   }
 
-  function updatePoll(p){
-    var seats = Math.round(rand(p.baseSeat, p.seatRange));
-    var share = rand(p.baseShare, p.shareRange).toFixed(1);
-    var barPct = ((seats / 234) * 100).toFixed(1);
-    document.getElementById(p.seatsEl).textContent = seats;
-    document.getElementById(p.shareEl).textContent = share;
+  function timeToStart(){
+    var now = new Date();
+    var diff = countStart - now;
+    if (diff <= 0) return 0;
+    return diff;
+  }
+
+  function formatCountdown(ms){
+    if (ms <= 0) return 'Counting started';
+    var days = Math.floor(ms / (1000*60*60*24));
+    var hours = Math.floor((ms % (1000*60*60*24)) / (1000*60*60));
+    var mins = Math.floor((ms % (1000*60*60)) / (1000*60));
+    return 'Counting begins in ' + days + 'd ' + hours + 'h ' + mins + 'm';
+  }
+
+  function updateCountStatus(){
+    var remaining = timeToStart();
+    if (remaining > 0) {
+      pollStatus.textContent = formatCountdown(remaining);
+      document.querySelectorAll('.poll-update').forEach(function(el){ el.textContent = 'Awaiting count start'; });
+      return false;
+    }
+    pollStatus.textContent = 'LIVE VOTE COUNTING IN PROGRESS';
+    return true;
+  }
+
+  function updateCount(p){
+    var current = parseInt(document.getElementById(p.seatsEl).textContent, 10);
+    var currentShare = parseFloat(document.getElementById(p.shareEl).textContent);
+    var targetSeat = p.finalSeat;
+    var targetShare = p.finalShare;
+    var nextSeat = Math.min(targetSeat, current + Math.ceil((targetSeat - current) * 0.12 + 0.2));
+    var nextShare = Math.min(targetShare, (currentShare + (targetShare - currentShare) * 0.1).toFixed(1));
+    document.getElementById(p.seatsEl).textContent = nextSeat;
+    document.getElementById(p.shareEl).textContent = nextShare;
+    var barPct = ((nextSeat / 234) * 100).toFixed(1);
     document.getElementById(p.barEl).style.width = barPct + '%';
     document.getElementById(p.updEl).textContent = formatTime();
   }
 
-  function runAll(){ polls.forEach(function(p){ updatePoll(p); }); }
-  runAll();
+  function initializePollCards(){
+    polls.forEach(function(p){
+      document.getElementById(p.seatsEl).textContent = p.baseSeat;
+      document.getElementById(p.shareEl).textContent = p.baseShare.toFixed(1);
+      document.getElementById(p.barEl).style.width = ((p.baseSeat / 234) * 100).toFixed(1) + '%';
+      document.getElementById(p.updEl).textContent = 'Awaiting count start';
+    });
+  }
 
-  // stagger updates slightly for realism
-  polls.forEach(function(p, i){
-    setInterval(function(){ updatePoll(p); }, 2500 + i * 400);
-  });
+  initializePollCards();
+  updateCountStatus();
+  setInterval(updateCountStatus, 30000);
+
+  function startLiveCount(){
+    polls.forEach(function(p, i){
+      setTimeout(function(){
+        updateCount(p);
+        setInterval(function(){ updateCount(p); }, 4000 + i * 300);
+      }, i * 800);
+    });
+  }
+
+  var started = false;
+  setInterval(function(){
+    if (!started && timeToStart() === 0) {
+      started = true;
+      updateCountStatus();
+      startLiveCount();
+    }
+  }, 1000);
 })();
 
 // ── SVG MAP — Simplified Tamil Nadu district blocks ──
